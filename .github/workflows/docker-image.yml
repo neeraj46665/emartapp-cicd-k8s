@@ -31,22 +31,22 @@ jobs:
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
     # Build client image
-    - name: Build client image
+    - name: Build and Tag client image
       run: |
         docker-compose build client
-        docker tag client:latest ${{ env.IMAGE_NAME }}/client:latest
+        docker tag emartapp-cicd-k8s_client:latest ${{ env.IMAGE_NAME }}/client:latest
 
     # Build api (nodeapi) image
-    - name: Build api image
+    - name: Build and Tag api image
       run: |
         docker-compose build api
-        docker tag api:latest ${{ env.IMAGE_NAME }}/api:latest
+        docker tag emartapp-cicd-k8s_api:latest ${{ env.IMAGE_NAME }}/api:latest
 
     # Build webapi (javaapi) image
-    - name: Build webapi image
+    - name: Build and Tag webapi image
       run: |
         docker-compose build webapi
-        docker tag webapi:latest ${{ env.IMAGE_NAME }}/webapi:latest
+        docker tag emartapp-cicd-k8s_webapi:latest ${{ env.IMAGE_NAME }}/webapi:latest
 
     # Push client image
     - name: Push client image
@@ -58,7 +58,7 @@ jobs:
       run: |
         docker push ${{ env.IMAGE_NAME }}/api:latest
 
-    # Push webapi image
+    # Push webapi (javaapi) image
     - name: Push webapi image
       run: |
         docker push ${{ env.IMAGE_NAME }}/webapi:latest
