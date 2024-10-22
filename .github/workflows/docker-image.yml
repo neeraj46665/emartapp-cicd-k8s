@@ -1,0 +1,58 @@
+name: Build and Push Docker Images
+
+on:
+  push:
+    branches:
+      - main  # This will run the action when changes are pushed to the main branch
+  pull_request:
+    branches:
+      - main
+
+env:
+  IMAGE_NAME: neeraj46665
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # Log in to Docker Hub
+    - name: Log in to Docker Hub
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+    # Build client image
+    - name: Build client image
+      run: |
+        docker-compose build client
+        docker tag client:latest ${{ env.IMAGE_NAME }}/client:latest
+
+    # Build api (nodeapi) image
+    - name: Build api image
+      run: |
+        docker-compose build api
+        docker tag api:latest ${{ env.IMAGE_NAME }}/api:latest
+
+    # Build webapi (javaapi) image
+    - name: Build webapi image
+      run: |
+        docker-compose build webapi
+        docker tag webapi:latest ${{ env.IMAGE_NAME }}/webapi:latest
+
+    # Push client image
+    - name: Push client image
+      run: |
+        docker push ${{ env.IMAGE_NAME }}/client:latest
+
+    # Push api (nodeapi) image
+    - name: Push api image
+      run: |
+        docker push ${{ env.IMAGE_NAME }}/api:latest
+
+    # Push webapi image
+    - name: Push webapi image
+      run: |
+        docker push ${{ env.IMAGE_NAME }}/webapi:latest
+
