@@ -1,64 +1,64 @@
-name: Build and Push Docker Images
+# name: Build and Push Docker Images
 
-on:
-  push:
-    branches:
-      - main  # This will run the action when changes are pushed to the main branch
-  pull_request:
-    branches:
-      - main
+# on:
+#   push:
+#     branches:
+#       - main  # This will run the action when changes are pushed to the main branch
+#   pull_request:
+#     branches:
+#       - main
 
-env:
-  IMAGE_NAME: neeraj46665
+# env:
+#   IMAGE_NAME: neeraj46665
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
 
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+#     steps:
+#     - name: Checkout repository
+#       uses: actions/checkout@v3
 
-    # Install Docker Compose
-    - name: Install Docker Compose
-      run: |
-        sudo curl -L "https://github.com/docker/compose/releases/download/v2.5.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-        sudo chmod +x /usr/local/bin/docker-compose
-        docker-compose version
+#     # Install Docker Compose
+#     - name: Install Docker Compose
+#       run: |
+#         sudo curl -L "https://github.com/docker/compose/releases/download/v2.5.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+#         sudo chmod +x /usr/local/bin/docker-compose
+#         docker-compose version
 
-    # Log in to Docker Hub
-    - name: Log in to Docker Hub
-      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+#     # Log in to Docker Hub
+#     - name: Log in to Docker Hub
+#       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-    # Build client image
-    - name: Build and Tag client image
-      run: |
-        docker-compose build client
-        docker tag emartapp-cicd-k8s_client:latest ${{ env.IMAGE_NAME }}/client:latest
+#     # Build client image
+#     - name: Build and Tag client image
+#       run: |
+#         docker-compose build client
+#         docker tag emartapp-cicd-k8s_client:latest ${{ env.IMAGE_NAME }}/client:latest
 
-    # Build api (nodeapi) image
-    - name: Build and Tag api image
-      run: |
-        docker-compose build api
-        docker tag emartapp-cicd-k8s_api:latest ${{ env.IMAGE_NAME }}/api:latest
+#     # Build api (nodeapi) image
+#     - name: Build and Tag api image
+#       run: |
+#         docker-compose build api
+#         docker tag emartapp-cicd-k8s_api:latest ${{ env.IMAGE_NAME }}/api:latest
 
-    # Build webapi (javaapi) image
-    - name: Build and Tag webapi image
-      run: |
-        docker-compose build webapi
-        docker tag emartapp-cicd-k8s_webapi:latest ${{ env.IMAGE_NAME }}/webapi:latest
+#     # Build webapi (javaapi) image
+#     - name: Build and Tag webapi image
+#       run: |
+#         docker-compose build webapi
+#         docker tag emartapp-cicd-k8s_webapi:latest ${{ env.IMAGE_NAME }}/webapi:latest
 
-    # Push client image
-    - name: Push client image
-      run: |
-        docker push ${{ env.IMAGE_NAME }}/client:latest
+#     # Push client image
+#     - name: Push client image
+#       run: |
+#         docker push ${{ env.IMAGE_NAME }}/client:latest
 
-    # Push api (nodeapi) image
-    - name: Push api image
-      run: |
-        docker push ${{ env.IMAGE_NAME }}/api:latest
+#     # Push api (nodeapi) image
+#     - name: Push api image
+#       run: |
+#         docker push ${{ env.IMAGE_NAME }}/api:latest
 
-    # Push webapi (javaapi) image
-    - name: Push webapi image
-      run: |
-        docker push ${{ env.IMAGE_NAME }}/webapi:latest
+#     # Push webapi (javaapi) image
+#     - name: Push webapi image
+#       run: |
+#         docker push ${{ env.IMAGE_NAME }}/webapi:latest
