@@ -17,7 +17,7 @@ spec:
         image: neeraj46665/api:latest
         ports:
         - containerPort: 5000
-        restartPolicy: Always
+        
 ---
 apiVersion: v1
 kind: Service
