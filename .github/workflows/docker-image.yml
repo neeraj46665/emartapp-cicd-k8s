@@ -19,50 +19,46 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
+    # Install Docker Compose
+    - name: Install Docker Compose
+      run: |
+        sudo curl -L "https://github.com/docker/compose/releases/download/v2.5.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+        sudo chmod +x /usr/local/bin/docker-compose
+        docker-compose version
+
     # Log in to Docker Hub
     - name: Log in to Docker Hub
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-    # Use hoverkraft-tech/compose-action to build and start services
-    - name: Build and start client service
-      uses: hoverkraft-tech/compose-action@v0.0.0
-      with:
-        compose-file: './docker-compose.yml'
-        services: 'client'
-        up-flags: '--build'
-
-    - name: Tag and push client image
+    # Build client image
+    - name: Build client image
       run: |
+        docker-compose build client
         docker tag client:latest ${{ env.IMAGE_NAME }}/client:latest
+
+    # Build api (nodeapi) image
+    - name: Build api image
+      run: |
+        docker-compose build api
+        docker tag api:latest ${{ env.IMAGE_NAME }}/api:latest
+
+    # Build webapi (javaapi) image
+    - name: Build webapi image
+      run: |
+        docker-compose build webapi
+        docker tag webapi:latest ${{ env.IMAGE_NAME }}/webapi:latest
+
+    # Push client image
+    - name: Push client image
+      run: |
         docker push ${{ env.IMAGE_NAME }}/client:latest
 
-    - name: Build and start api service
-      uses: hoverkraft-tech/compose-action@v0.0.0
-      with:
-        compose-file: './docker-compose.yml'
-        services: 'api'
-        up-flags: '--build'
-
-    - name: Tag and push api image
+    # Push api (nodeapi) image
+    - name: Push api image
       run: |
-        docker tag api:latest ${{ env.IMAGE_NAME }}/api:latest
         docker push ${{ env.IMAGE_NAME }}/api:latest
 
-    - name: Build and start webapi service
-      uses: hoverkraft-tech/compose-action@v0.0.0
-      with:
-        compose-file: './docker-compose.yml'
-        services: 'webapi'
-        up-flags: '--build'
-
-    - name: Tag and push webapi image
+    # Push webapi image
+    - name: Push webapi image
       run: |
-        docker tag webapi:latest ${{ env.IMAGE_NAME }}/webapi:latest
         docker push ${{ env.IMAGE_NAME }}/webapi:latest
-
-    # Tear down the services after the build process
-    - name: Shut down services
-      uses: hoverkraft-tech/compose-action@v0.0.0
-      with:
-        compose-file: './docker-compose.yml'
-        down-flags: '--volumes'
